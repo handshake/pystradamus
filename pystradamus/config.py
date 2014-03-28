@@ -31,4 +31,7 @@ def locate_and_parse(override_file):
     return cfg
 
 def main(args):
-    print "CONFIG!", args
+    """Prints out the sample config file so you can pipe it to a known location
+    """
+    from pkg_resources import resource_string
+    print resource_string(__name__, 'etc/sample.cfg')
