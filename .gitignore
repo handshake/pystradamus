@@ -6,3 +6,4 @@
 *.patch
 *.dump
 .DS_Store*
+.pystradamus.cfg
