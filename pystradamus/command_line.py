@@ -40,7 +40,7 @@ def main():
     # parse args and dispatch to the correct handler
     args = main_parser.parse_args()
     cfg = pystradamus.config.locate_and_parse(args.config)
-    if cfg is None:
+    if cfg is None and args.func is not pystradamus.config.main:
         pystradamus.utils.error_exit("No configuration found!")
     args.cfg = cfg
 
