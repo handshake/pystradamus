@@ -8,4 +8,4 @@ password: supersecretpassword
 
 # Usually estimates are stored as custom fields inside jira that have a 5-digit integer id
 # do not include the text "customfield_" or "cf[...]", just put the integer id
-estimate_field_id: 10102
+estimate_field_id: 10101
