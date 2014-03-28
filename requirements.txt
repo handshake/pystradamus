@@ -5,4 +5,3 @@ python-dateutil==2.2
 requests==2.2.1
 six==1.6.1
 wsgiref==0.1.2
-git+https://github.com/bitly/data_hacks.git@2bf87f8b31ed60a7d447cf9e63dd14df949ad969
