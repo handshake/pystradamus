@@ -5,19 +5,19 @@ import sys
 
 import pystradamus
 
-# configure logging to just go to stdout
-logging.basicConfig(
-    format="%(asctime)s [%(levelname)-10s] (%(name)s) %(message)s",
-    stream=sys.stdout,
-    level=logging.WARNING
-)
-
-
 def main():
     """Sets up the main config parser for the main entry point, this does common
     things like print help or the version and then dispatches to further down
     sub-parsers for specific information
     """
+    # configure logging to just go to stdout
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)-10s] (%(name)s) %(message)s",
+        stream=sys.stdout,
+        level=logging.INFO
+    )
+
+    log = logging.getLogger(__name__)
 
     # build the main parser
     main_parser = argparse.ArgumentParser()
@@ -25,6 +25,9 @@ def main():
             type=argparse.FileType('r'), help="path to config file")
     main_parser.add_argument('-v', '--verbose', help="show debug messages",
             action='store_true')
+    main_parser.add_argument('-d', '--database', metavar="FILE",
+            help="path to the sqllite3 database file to use",
+            default='evidence.db')
     main_parser.add_argument('--version', help='print version and exit')
     subparsers = main_parser.add_subparsers()
 
@@ -43,7 +46,8 @@ def main():
     if cfg is None and args.func is not pystradamus.config.main:
         pystradamus.utils.error_exit("No configuration found!")
     args.cfg = cfg
-
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
+
+    pystradamus.storage.init(args.database)
     args.func(args)
