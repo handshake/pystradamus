@@ -58,3 +58,32 @@ class Jira(object):
             offset += limit
         log.debug("received %d issues", len(issues))
         return issues
+
+    def get_estimated_tickets_for_user(self, username, limit=10):
+        """Finds the next `limit` tickets for a given user that are estimated,
+        assigned and in a "newish" status. They come back in backlog rank order.
+        """
+        log.debug("fetching next ticket for %s", username)
+
+        jql = ' '.join([
+            'assignee = %s' % username,
+            'AND cf[%s] is not EMPTY' % self.estimate_field_id,
+            'AND status in (New, "On Deck")',
+            'AND resolution is EMPTY',
+            'ORDER BY rank ASC'
+        ])
+        resp = self.get('search', params={
+            'jql': jql,
+            #'fields': 'all',
+            'startAt': 0,
+            'maxResults': limit
+          })
+        log.debug("found %d tickets", resp['total'])
+
+        tickets = []
+        # break these into more digestible python dicts so the other parts of
+        # the system don't need to know about Jira's internal format
+        for i in resp['issues']:
+            tickets.append({"key": i['key']})
+
+        return tickets

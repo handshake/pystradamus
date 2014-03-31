@@ -7,9 +7,21 @@ from dateutil.parser import parse as date_parse
 from .jira import Jira
 from .evidence import Evidence
 from .storage import add_or_update_evidence
-from .utils import format_timedelta
+from .utils import format_timedelta, error_exit
 
 log = logging.getLogger(__name__)
+
+def main(args):
+    """The command_line dispatches to this function whenever the `history`
+    parser is matched. Do further dispatching here
+    """
+    if args.refresh:
+        refresh(args)
+    elif args.predict:
+        predict(args)
+    else:
+        error_exit("%s requires either refresh or predict flags to be set." %
+                __name__)
 
 def accumulate_time_in_status(histories):
     """Given a dict of Jira "histories" find the ones that represent changes to
@@ -30,7 +42,7 @@ def accumulate_time_in_status(histories):
         accumulator += (stop - start)
     return accumulator
 
-def main(args):
+def refresh(args):
     """Main entry point of the history command. Builds jql to find closed issues
     for a given user.
     """
@@ -63,4 +75,14 @@ def main(args):
         for t in sorted(estimates[estimate], reverse=True):
             #print t.total_seconds()
             print format_timedelta(t)
+
+def predict(args):
+    log.debug("predicting ticket completions for %s", args.username)
+
+    j = Jira.from_config(args.cfg)
+    tickets = j.get_estimated_tickets_for_user(args.username, limit=10)
+    for t in tickets:
+        print t
+        #print t['key'], t['customfield_%s' % j.estimate_field_id]
+
 

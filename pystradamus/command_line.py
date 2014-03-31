@@ -33,6 +33,11 @@ def main():
 
     #history functionality
     history_parser = subparsers.add_parser('history', help='history yo')
+    history_parser.add_argument('-r', '--refresh', help="Pulls historic ticket "
+            "data from jira", action="store_true")
+    history_parser.add_argument('-p', '--predict', help="Generate a probability"
+            " curve for the next assigned ticket with an estimate for a given "
+            "user", action="store_true")
     history_parser.add_argument('username', type=str,
             help='JIRA username to query tickets for')
     history_parser.set_defaults(func=pystradamus.history.main)
