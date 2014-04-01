@@ -43,6 +43,8 @@ def main():
     history_parser.set_defaults(func=pystradamus.history.main)
 
     config_parser = subparsers.add_parser('config', help='config yo')
+    config_parser.add_argument('-f', '--fields', action="store_true",
+            help="Pulls custom fields and their ids from Jira")
     config_parser.set_defaults(func=pystradamus.config.main)
 
     # parse args and dispatch to the correct handler

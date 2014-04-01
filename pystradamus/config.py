@@ -1,6 +1,8 @@
 import ConfigParser
 import logging
 
+from .jira import Jira
+
 log = logging.getLogger(__name__)
 
 CONFIG_FILE_PATHS = ['.pystradamus.cfg', '~/pystradamus.cfg',
@@ -30,8 +32,20 @@ def locate_and_parse(override_file):
             return None
     return cfg
 
+def dump_custom_fields(args):
+    """If you have the basics of a jira config (Url + auth) this method can be
+    used to extract the internal ids of the various custom fields needed to
+    project estimates
+    """
+    j = Jira.from_config(args.cfg)
+    for f in j.get_custom_fields():
+        print "%s: %s" % (f['id'], f['name'])
+
 def main(args):
     """Prints out the sample config file so you can pipe it to a known location
     """
-    from pkg_resources import resource_string
-    print resource_string(__name__, 'etc/sample.cfg')
+    if args.fields:
+        dump_custom_fields(args)
+    else:
+        from pkg_resources import resource_string
+        print resource_string(__name__, 'etc/sample.cfg')

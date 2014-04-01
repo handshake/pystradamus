@@ -84,6 +84,28 @@ class Jira(object):
         # break these into more digestible python dicts so the other parts of
         # the system don't need to know about Jira's internal format
         for i in resp['issues']:
-            tickets.append({"key": i['key']})
+            import pprint
+            pprint.pprint(i)
+            tickets.append({
+                "key": i['key'],
+                "summary": i['fields']['summary'],
+                "estimate": i['fields']['customfield_%s' % \
+                        self.estimate_field_id]
+                })
 
         return tickets
+
+    def get_custom_fields(self):
+        """Pulls the custom fields and their internal ids. Mostly useful when
+        you have the url+auth for a Jira server but none of the needed internal
+        ids
+        """
+        customs = []
+        for f in self.get('field'):
+            if f['custom']:
+                customs.append({
+                    'name': f['name'],
+                    'id': f['id']
+                    })
+        return customs
+
