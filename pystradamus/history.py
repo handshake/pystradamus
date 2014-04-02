@@ -1,12 +1,13 @@
 import datetime
 import logging
+import random
 from collections import defaultdict
 
 from dateutil.parser import parse as date_parse
 
+from . import storage
 from .jira import Jira
 from .evidence import Evidence
-from .storage import add_or_update_evidence
 from .utils import format_timedelta, error_exit
 
 log = logging.getLogger(__name__)
@@ -67,7 +68,7 @@ def refresh(args):
         if estimate and time_in_progress:
             estimates[estimate].append(time_in_progress)
             e = Evidence(i['key'], args.username, estimate, time_in_progress)
-            add_or_update_evidence(e)
+            storage.add_or_update_evidence(e)
 
     for estimate in sorted(estimates.keys(), reverse=True):
         print "*" * 80
@@ -80,9 +81,23 @@ def predict(args):
     log.debug("predicting ticket completions for %s", args.username)
 
     j = Jira.from_config(args.cfg)
-    tickets = j.get_estimated_tickets_for_user(args.username, limit=10)
-    for t in tickets:
-        print t
-        #print t['key'], t['customfield_%s' % j.estimate_field_id]
+    future_ticket = j.get_estimated_tickets_for_user(args.username, limit=1)[0]
+    #future_ticket = {'key':'HS-0000', 'summary': 'test', 'estimate': 0.05}
+
+    log.info("projecting future date of %s: %s", future_ticket['key'],
+            future_ticket['summary'])
+
+    evidence = storage.get_evidence_for_user(args.username,
+            future_ticket['estimate'])
+
+    times = [e['seconds_in_progress'] for e in evidence]
+    futures = [] # we will make 100 futures with a 1% probability for each
+    for i in range(100):
+        futures.append(random.choice(times))
+    futures.sort()
+    prob50 = futures[49]
+    prob98 = futures[97]
+    print "50%% chance: %s" % (datetime.datetime.now() + datetime.timedelta(seconds=prob50))
+    print "98%% chance: %s" % (datetime.datetime.now() + datetime.timedelta(seconds=prob98))
 
 
