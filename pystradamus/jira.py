@@ -84,8 +84,6 @@ class Jira(object):
         # break these into more digestible python dicts so the other parts of
         # the system don't need to know about Jira's internal format
         for i in resp['issues']:
-            import pprint
-            pprint.pprint(i)
             tickets.append({
                 "key": i['key'],
                 "summary": i['fields']['summary'],
