@@ -68,7 +68,7 @@ class Jira(object):
         jql = ' '.join([
             'assignee = %s' % username,
             'AND cf[%s] is not EMPTY' % self.estimate_field_id,
-            'AND status in (New, "On Deck")',
+            'AND status != Closed',
             'AND resolution is EMPTY',
             'ORDER BY rank ASC'
         ])

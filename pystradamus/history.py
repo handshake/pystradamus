@@ -96,7 +96,7 @@ def predict(args):
     base50 = datetime.datetime.now()
     base95 = datetime.datetime.now()
     for order, t in enumerate(future_tickets):
-        print t['key']
+        print "%s [%s] %s" % (t['key'], t['estimate'], t['summary'])
         futures[order].sort()
         base50 += futures[order][49]
         base95 += futures[order][94]
